@@ -59,12 +59,39 @@ namespace
 	}
 }
 
+class Tweaks
+{
+public:
+	class MagicEffectDescription
+	{
+	public:
+		static void Install()
+		{
+			REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(51028, 51906), OFFSET(0xC3, 0xC5) };
+
+			auto& trampoline = SKSE::GetTrampoline();
+			thunk = trampoline.write_call<5>(target.address(), func);
+		}
+		
+	private:
+		static void* func(void* a_this, const char*)
+		{
+			return thunk(a_this, "<br>");
+		}
+
+		inline static REL::Relocation<decltype(func)> thunk;
+	};
+};
+
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
 	InitializeLog();
 	logger::info(FMT_STRING("{:s} loaded"), Version::PROJECT);
 
 	SKSE::Init(a_skse);
+	SKSE::AllocTrampoline(1 << 4);
+	
+	Tweaks::MagicEffectDescription::Install();
 
 	return true;
 }
