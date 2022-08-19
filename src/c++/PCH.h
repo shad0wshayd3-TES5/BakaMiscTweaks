@@ -18,7 +18,7 @@ namespace logger = SKSE::log;
 namespace stl
 {
 	using namespace SKSE::stl;
-	
+
 	void asm_replace(std::uintptr_t a_from, std::size_t a_size, std::uintptr_t a_to);
 }
 
