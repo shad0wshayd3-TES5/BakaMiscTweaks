@@ -1,3 +1,5 @@
+#include "Scripts/Scripts.h"
+
 #ifdef SKYRIM_AE
 extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 {
@@ -91,6 +93,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	SKSE::Init(a_skse);
 	SKSE::AllocTrampoline(1 << 4);
 	
+	Scripts::Install();
 	Tweaks::MagicEffectDescription::Install();
 
 	return true;
