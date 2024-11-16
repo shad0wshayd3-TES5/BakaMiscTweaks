@@ -1,33 +1,49 @@
-class Tweaks
+namespace Tweaks
 {
-public:
-	class MagicEffectDescription
+	namespace MagicEffectDescription
 	{
-	public:
-		static void Install()
-		{
-			REL::Relocation<std::uintptr_t> target{ REL::ID(51906), 0xC5 };
+		static REL::Relocation<void*(void*, const char*)> thunk;
 
-			auto& trampoline = SKSE::GetTrampoline();
-			thunk = trampoline.write_call<5>(target.address(), func);
-		}
-
-	private:
 		static void* func(void* a_this, const char*)
 		{
 			return thunk(a_this, "<br>");
 		}
+		
+		static void Install()
+		{
+			static REL::Relocation target{ REL::ID(51906), 0xC5 };
+			thunk = target.write_call<5>(func);
+		}
+	}
 
-		inline static REL::Relocation<decltype(func)> thunk;
-	};
-};
+	static void Install()
+	{
+		MagicEffectDescription::Install();
+	}
+}
+
+namespace
+{
+	void MessageCallback(SKSE::MessagingInterface::Message* a_msg)
+	{
+		switch (a_msg->type)
+		{
+		case SKSE::MessagingInterface::kPostLoad:
+		{
+			Tweaks::Install();
+			break;
+		}
+		default:
+			break;
+		}
+	}
+}
 
 SKSEPluginLoad(const SKSE::LoadInterface* a_SKSE)
 {
 	SKSE::Init(a_SKSE, true);
 	SKSE::AllocTrampoline(16);
-
-	Tweaks::MagicEffectDescription::Install();
+	SKSE::GetMessagingInterface()->RegisterListener(MessageCallback);
 
 	return true;
 }
