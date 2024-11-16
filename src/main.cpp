@@ -8,7 +8,7 @@ namespace Tweaks
 		{
 			return thunk(a_this, "<br>");
 		}
-		
+
 		static void Install()
 		{
 			static REL::Relocation target{ REL::ID(51906), 0xC5 };
